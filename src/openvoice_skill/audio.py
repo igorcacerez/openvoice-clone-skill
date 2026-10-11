@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,7 @@ def run_tool(args: list[str], *, timeout: int = 1800, text: str | None = None) -
     try:
         result = subprocess.run(args, input=text, capture_output=True, text=True, encoding="utf-8",
                                 errors="replace", timeout=timeout,
+                                env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
                                 creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0)
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise SkillError(f"Falha ao executar {Path(args[0]).name}: {type(exc).__name__}") from exc

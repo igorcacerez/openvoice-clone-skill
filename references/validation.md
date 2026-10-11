@@ -1,5 +1,16 @@
 # Validação realizada em 11 de outubro de 2026
 
+## Correção após avaliação de qualidade
+
+O teste de arquivos abaixo não detectava falhas de inteligibilidade. Foi corrigida a codificação UTF-8 no subprocesso Windows e adicionada uma alternativa PT-BR feminina com Kokoro ONNX 0.4.9. A calibração agora distingue motor, modelo, voz base e texto, evitando reutilizar o perfil da origem anterior. Frases Kokoro preservam pausas de 400 ms.
+
+- 19 testes leves passaram em 2,47 s, incluindo regressão de acentos, seleção sem fallback silencioso e invalidação por voz base.
+- A integração real com base Kokoro PT-BR passou em 177,27 s: cadastro sintético, WAV curto, MP3 longo, inglês Piper, CRUD e importação/exportação. Sete avisos de depreciação conhecidos.
+- `ruff check .`, `compileall` e `uv pip check` do ambiente Kokoro passaram; `doctor` verificou instalação e perfil persistente.
+- Uma prévia local revisada teve todas as palavras recuperadas pelo Whisper base local. Essa checagem de inteligibilidade não demonstra emoção, naturalidade ou semelhança perceptiva. Nenhum áudio ou perfil pessoal foi publicado.
+
+## Verificação inicial
+
 Ambiente: Windows 11 nativo, Python 3.11.16, NVIDIA GTX 1650 com 4 GB de VRAM, PyTorch 2.5.1+cu118, OpenVoice V2 e Piper 1.8.0 em ambientes separados.
 
 | Verificação | Evidência |

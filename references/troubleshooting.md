@@ -6,6 +6,12 @@ Use o executável da `.venv` do runtime. Python 3.14 não é o runtime validado.
 
 `uv pip check --python CAMINHO_PYTHON` verifica consistência. O ambiente Piper é separado para evitar conflitos e executa o motor pelo processo externo. Verifique a integridade dos arquivos ONNX/config se Piper falhar. No primeiro processamento, imports e caches locais podem demorar mais; não encerre apenas porque não houve saída imediata.
 
+## Acentos viram símbolos ou palavras incompreensíveis no Windows
+
+Python filho pode decodificar stdin com uma página de código legada, mesmo quando o processo pai envia UTF-8. Isso transformava acentos em caracteres que o Piper pronunciava como símbolos, inclusive copyright. `run_tool` agora define `PYTHONUTF8=1` e `PYTHONIOENCODING=utf-8` no ambiente do filho. Um teste com locale legado verifica o texto recebido pelo subprocesso. A calibração base usa nova chave de cache para não reutilizar áudio produzido pela entrada corrompida.
+
+Isso é uma correção de inteligibilidade, não controle de emoção. Testes de duração e existência de arquivo não identificaram esse defeito; compare o conteúdo falado, e não só o formato do arquivo. Não recadastre perfis a partir de referências humanas válidas por causa desse erro de TTS.
+
 ## CUDA e memória
 
 `doctor --load-models` deve mostrar a GPU e carregar o conversor. Se CUDA falhar, tente `OPENVOICE_DEVICE=cpu` e repita. Se faltar VRAM durante uma narração, reduza `--max-chars` ou use CPU. Não instale nem troque drivers globais automaticamente. O runtime CUDA 11.8 vem no wheel PyTorch.

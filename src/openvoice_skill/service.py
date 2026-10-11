@@ -17,7 +17,7 @@ from .audio import active_speech, finalize, pcm
 from .cloner import Cloner, sha256
 from .config import Config, SkillError
 from .storage import Library, now
-from .tts import Piper, split_text
+from .tts import TTS, split_text
 
 
 CALIBRATION = {
@@ -33,7 +33,7 @@ class Service:
         self.config = config
         self.library = Library(config)
         self.cloner = Cloner(config)
-        self.tts = Piper(config)
+        self.tts = TTS(config)
 
     def add(self, name: str, audio: Path, consent: bool, language: str = "pt-BR",
             existing: str | None = None) -> dict[str, Any]:
@@ -57,9 +57,9 @@ class Service:
             return self.library.commit(name, stage, metadata, existing)
 
     def source_embedding(self, language: str) -> Path:
-        model = self.config.piper_model(language)
-        cache_key = hashlib.sha256((sha256(model) + sha256(Path(str(model) + ".json")) +
-                                   sha256(self.config.converter_dir / "checkpoint.pth") + "calibration-v1").encode()).hexdigest()
+        cache_key = hashlib.sha256((self.tts.identity(language) +
+                                   sha256(self.config.converter_dir / "checkpoint.pth") + "calibration-v2-utf8" +
+                                   CALIBRATION.get(language, "")).encode()).hexdigest()
         root = self.config.cache / "source-embeddings" / cache_key
         root.parent.mkdir(parents=True, exist_ok=True)
         with FileLock(str(root) + ".lock", timeout=600):
@@ -85,8 +85,8 @@ class Service:
             raise SkillError("Velocidade deve estar entre 0.5 e 2; tau entre 0.05 e 1.")
         if format not in ("wav", "mp3"):
             raise SkillError("Formato deve ser wav ou mp3.")
-        segments = split_text(text, max_chars)
-        self.config.piper_model(language)
+        segments = split_text(text, max_chars, keep_sentences=self.tts.uses_kokoro(language))
+        self.tts.identity(language)
         target = output or self.config.exports / ("narracao-" + uuid.uuid4().hex[:12] + "." + format)
         target = target.expanduser().resolve()
         if target.suffix.lower() not in (".wav", ".mp3"):
@@ -97,7 +97,8 @@ class Service:
         generation_id = "gen_" + uuid.uuid4().hex
         metadata: dict[str, Any] = {"language": language, "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
                                     "characters": len(text), "segments": len(segments), "output": str(target),
-                                    "speed": speed, "tau": tau, "synthetic": True, "watermark": False}
+                                    "speed": speed, "tau": tau, "synthetic": True, "watermark": False,
+                                    "tts_base": "kokoro" if self.tts.uses_kokoro(language) else "piper"}
         with FileLock(str(target) + ".lock", timeout=60), self.library.locked():
             if target.exists():
                 raise SkillError("Arquivo de destino ja existe. Escolha outro nome; nada foi sobrescrito.")
@@ -131,7 +132,8 @@ class Service:
                             samples[-fade:] *= np.linspace(1, 0, fade)
                             writer.write(samples)
                             if index < len(base_files) - 1:
-                                pause = 0.18 if segments[index].endswith((".", "!", "?")) else 0.10
+                                sentence_pause = 0.40 if self.tts.uses_kokoro(language) else 0.18
+                                pause = sentence_pause if segments[index].endswith((".", "!", "?")) else 0.10
                                 writer.write(np.zeros(int(22050 * pause), dtype="float32"))
                     rendered = directory / ("final" + target.suffix.lower())
                     finalize(joined, rendered, self.config)

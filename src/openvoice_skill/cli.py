@@ -26,6 +26,13 @@ def doctor(config: Config, load_models: bool = False) -> dict[str, Any]:
             checks["piper_" + language] = True
         except SkillError:
             checks["piper_" + language] = False
+    from .tts import TTS
+    for language in config.kokoro.get("languages", {}):
+        try:
+            TTS(config).identity(language)
+            checks["kokoro_" + language] = True
+        except SkillError:
+            checks["kokoro_" + language] = False
     try:
         import torch
         gpu = torch.cuda.get_device_name(0) if torch.cuda.is_available() else None

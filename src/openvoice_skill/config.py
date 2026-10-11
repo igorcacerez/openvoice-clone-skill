@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
@@ -31,6 +31,7 @@ class Config:
     ffprobe: str = "ffprobe"
     version: str = "v2"
     threads: int = 4
+    kokoro: dict = field(default_factory=dict)
 
     @classmethod
     def load(cls, path: str | Path | None = None) -> Config:
@@ -49,6 +50,7 @@ class Config:
             ffmpeg=raw.get("ffmpeg", shutil.which("ffmpeg") or "ffmpeg"),
             ffprobe=raw.get("ffprobe", shutil.which("ffprobe") or "ffprobe"),
             version=raw.get("version", "v2"), threads=int(raw.get("threads", 4)),
+            kokoro=raw.get("kokoro", {}),
         )
 
     def initialize(self) -> None:

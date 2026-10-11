@@ -14,3 +14,5 @@ O código deste wrapper é MIT. Dependências, modelos e datasets conservam suas
 Autorização para clonar uma pessoa ou reutilizar uma voz gerada por outro serviço deve ser obtida separadamente. A licença do software não concede direitos sobre a identidade vocal nem sobre gravações de terceiros.
 
 Referência acadêmica: Qin, Zengyi; Zhao, Wenliang; Yu, Xumin; Sun, Xin. *OpenVoice: Versatile Instant Voice Cloning*, 2023. [arXiv:2312.01479](https://arxiv.org/abs/2312.01479).
+
+- **Kokoro ONNX 0.4.9**, opcional: [runtime MIT](https://github.com/thewh1teagle/kokoro-onnx); [pesos Kokoro-82M Apache 2.0](https://huggingface.co/hexgrad/Kokoro-82M). Ambiente separado, fonemização por eSpeak NG, cujas licenças devem ser preservadas.

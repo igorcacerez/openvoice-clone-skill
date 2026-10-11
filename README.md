@@ -202,3 +202,7 @@ Não há garantia de semelhança perfeita, naturalidade profissional ou sotaque 
 Operações que alteram/geram perfis são serializadas por locks para proteger as referências. Cada chamada da CLI carrega seu próprio conversor; ele é reutilizado entre segmentos dentro dessa chamada. Interrupções abruptas podem deixar revisões de staging ou geração com status `running`; os perfis já confirmados não são substituídos. Sem daemon de modelos residente nesta versão.
 
 Veja [NOTICE.md](NOTICE.md) para licenças e atribuições. O wrapper é MIT; dependências externas conservam suas próprias licenças.
+
+## Correção de pronúncia e alternativa PT-BR
+
+O subprocesso TTS agora recebe UTF-8 explicitamente, evitando corrupção de acentos no Windows. Para base feminina local e pausas por frase, veja [Kokoro](references/kokoro.md). Testes de arquivo não atestam naturalidade ou emoção; a prévia precisa ser avaliada por escuta.
