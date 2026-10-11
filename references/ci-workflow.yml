@@ -1,0 +1,14 @@
+name: Lightweight tests
+on: [push, pull_request]
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --no-deps -e .
+      - run: python -m pip install numpy==1.26.4 soundfile==0.13.1 filelock==3.20.0 pytest==8.3.5 ruff==0.11.13
+      - run: ruff check src scripts tests
+      - run: pytest -m 'not integration' -q

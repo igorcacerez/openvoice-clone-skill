@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenVoice Clone"
+  short_description: "Vozes autorizadas e narração local em PT-BR"
+  default_prompt: "Use $openvoice-clone para gerenciar vozes autorizadas e gerar uma narração local."

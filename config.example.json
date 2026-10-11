@@ -1,0 +1,13 @@
+{
+  "root": "/home/usuario/.local/share/openvoice",
+  "repo": "/home/usuario/.local/share/openvoice/repo",
+  "models": "/home/usuario/.local/share/openvoice/models",
+  "data": "/home/usuario/.local/share/openvoice/data",
+  "exports": "/home/usuario/.local/share/openvoice/exports",
+  "cache": "/home/usuario/.local/share/openvoice/cache",
+  "piper_python": "/home/usuario/.local/share/openvoice/piper-venv/bin/python",
+  "piper_models": {"pt-BR": "piper/pt-BR/pt_BR-faber-medium.onnx"},
+  "device": "auto",
+  "version": "v2",
+  "threads": 4
+}
